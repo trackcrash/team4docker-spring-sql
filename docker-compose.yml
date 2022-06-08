@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./init/:/docker-entrypoint-initdb.d/
+    networks:
+      - mysql-net
+    container_name: mysql
+  web-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    networks:
+      - mysql-net
+    restart: always
+    container_name: web-app
+networks:
+  mysql-net:
+    driver: bridge
